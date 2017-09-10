@@ -1,0 +1,64 @@
+
+njour,
+
+J'ai vu plusieurs personnes qui se demandent comment on affiche des caractères unicodes, alors je fais ce sujet.
+
+Jusque là, vous savez afficher les 127 premiers caractères : de 0x00 à 0x7F. Pour cela, vous envoyez l'octet qui va bien à la fonction write et paf, le caractère s'affiche à l'écran. Seulement, il existe plein d'autres caractères, regardez : http://unicode-table.com/fr/98.
+
+On vois bien qu'un seul octet n'est pas suffisant pour coder tout ces caractères. Alors il y a une ruse !
+
+Jusque là, le bit de poids fort était toujours à 0. Pour le terminal, lorsque ce bit est à 0, il sait qu'il s'agit d'un caractère ordinaire et l'affiche donc immédiatement. Pour tout les autres caractère, le bit de poids fort est mis à 1. Et pour cette deuxième catégorie de caractères, il y aura même plusieurs bits de poids fort à 1, autant que d'octets nécessaires pour coder le caractère.
+
+Pour connaitre le nombre d'octets de codage, il faut se référer à ce petit tableau :
+
+0xxxxxxx
+110xxxxx 10xxxxxx
+1110xxxx 10xxxxxx 10xxxxxx
+11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+La première ligne représente la première catégorie de caractères, celle que nous connaissons bien. Les x sont les bits qui varient, on retrouve nos 127 possibilités.
+
+La deuxième ligne représente le format que vous devrez utiliser pour coder les caractères allant de 0x80 à 0x7FF, c'est à dire, tout les caractères qui ne rentre pas dans 7 bits mais qui rentrent dans 11 bits.
+
+Vous l'aurez compris, il faut utiliser le format qui va bien selon le nombre de bits nécessaire pour représenter le caractère voulu. Prenons un exemple, le caractère 'ሴ'.
+
+Sur le site x, il est indiqué que ce caractère est le 0x1234.
+En binaire, ça nous donne : 0001 0010 0011 0100. On a donc besoin de 13 bits.
+
+Ensuite on regarde dans notre petit tableau et on voit que pour 13 bits il faut utiliser 1110xxxx 10xxxxxx 10xxxxxx car 110xxxxx 10xxxxxx c'est trop petit.
+
+On range nos 13 bits à la place des x ce qui nous donne :
+
+1110xxxx 10xxxxxx 10xxxxxx
+    0001   001000   110100
+   11100001 10001000 10110100
+   En hexa, ça nous fait e1 88 b4.
+
+   Il vous suffit donc d'envoyer ces 3 octets à la fonction write pour afficher le ሴ
+
+   Vous pouvez essayez :
+
+  	unsigned char c;
+	c = 0xe1;
+	write(1, &c, 1);
+	c = 0x88;
+	write(1, &c, 1);
+	c = 0xb4;
+	write(1, &c, 1);
+	c = 0x0a;
+	write(1, &c, 1);
+Cela vous affiche le caractère ሴ.
+Lors du premier write, le terminal n'affiche rien, mais il le prend en compte. Il sait qu'il doit attendre 3 octets pour afficher le caractère. Lorsque le troisième octet arrive, il sais ce qu'il doit afficher et hop, notre caractère apparait à l'écran !
+
+							  A bientôt !
+¡
+x'AA'
+170
+x'A1'
+x'D2'
+x'EF'
+x'1A'
+x'C2A1'
+49825
+x'00A1'
+161
+x'00A1'
