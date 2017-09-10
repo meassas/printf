@@ -1,0 +1,63 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: meassas <marvin@42.fr>                     +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2017/09/10 16:22:25 by meassas           #+#    #+#              #
+#    Updated: 2017/09/10 16:46:49 by meassas          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+NAME	= libftprintf.a
+
+SRC 	= srcs/add_width_with_space_or_zero.c\
+		  srcs/check_flags.c\
+		  srcs/check_length.c\
+		  srcs/check_precision.c\
+		  srcs/check_specifier.c\
+		  srcs/check_width.c\
+		  srcs/ft_printf_int.c\
+		  srcs/printf_hex.c\
+		  srcs/handle_length.c\
+		  srcs/printf_octal.c\
+		  srcs/printf_pointer.c\
+		  srcs/printf_string.c\
+		  srcs/printf_char.c\
+		  libprintf/ft_bzero.c\
+		  libprintf/ft_isprint.c\
+		  libprintf/ft_isdigit.c\
+		  libprintf/ft_putendl.c\
+		  libprintf/ft_itoa.c\
+		  libprintf/ft_itoab_uintmax.c\
+		  libprintf/ft_itoa_base.c\
+		  libprintf/ft_atoi.c\
+		  libprintf/ft_memalloc.c\
+		  libprintf/ft_putchar.c\
+		  libprintf/ft_putnbr.c\
+		  libprintf/ft_putstr.c\
+		  libprintf/ft_putnbr_intmax.c\
+		  libprintf/ft_strjoin.c\
+		  libprintf/ft_strlen.c\
+		  libprintf/ft_strrev.c\
+		  libprintf/ft_toupper.c
+
+FLAGS	= -Wall -Wextra -Werror
+
+OBJ		= $(notdir $(SRC:%.c=%.o))
+
+all: $(NAME)
+
+$(NAME):
+	gcc -c $(FLAGS) $(SRC)
+	ar rc $(NAME) $(OBJ)
+	ranlib $(NAME)
+
+clean:
+	/bin/rm -f $(OBJ)
+
+fclean: clean
+	/bin/rm -f $(NAME)
+
+re: fclean all
